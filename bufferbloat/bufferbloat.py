@@ -13,7 +13,6 @@ from argparse import ArgumentParser
 
 from monitor import monitor_qlen
 
-import sys
 import os
 import math
 
@@ -80,19 +79,19 @@ class BBTopo(Topo):
 # Mininet!
 
 def start_iperf(net):
-    h1 = net.get('h1')
-    h2 = net.get('h2')
+    h1 = net.get("h1")
+    h2 = net.get("h2")
 
     print("Starting iperf server...")
     # For those who are curious about the -w 16m parameter, it ensures
     # that the TCP flow is not receiver window limited.  If it is,
     # there is a chance that the router buffer may not get filled up.
-    server = h2.popen("iperf -s -w 16m")
+    h2.popen("iperf -s -w 16m")
 
     # TODO: Start the iperf client on h1.  Ensure that you create a
     # long lived TCP flow.
     print("Starting iperf client...")
-    client = h1.popen(f"iperf -c {h2.IP()} --time {args.time}")
+    h1.popen(f"iperf -c {h2.IP()} --time {args.time}")
 
 def start_qmon(iface, interval_sec=0.1, outfile="q.txt"):
     monitor = Process(target=monitor_qlen,
@@ -108,11 +107,11 @@ def start_ping(net):
     # Hint: Use host.popen(cmd, shell=True).  If you pass shell=True
     # to popen, you can redirect cmd's output using shell syntax.
     # i.e. ping ... > /path/to/ping.
-    h1 = net.get('h1')
+    h1 = net.get("h1")
     h2 = net.get("h2")
 
     print("Starting ping...")
-    ping = h1.popen(f"ping {h2.IP()} -i 0.1 -c {int(args.time * 10)} > {args.dir}/ping.txt", shell=True)
+    h1.popen(f"ping {h2.IP()} -i 0.1 -c {int(args.time * 10)} > {args.dir}/ping.txt", shell=True)
 
 def start_webserver(net):
     h1 = net.get('h1')
@@ -121,8 +120,8 @@ def start_webserver(net):
     return [proc]
 
 def download_webpage(net):
-    h1 = net.get('h1')
-    h2 = net.get('h2')
+    h1 = net.get("h1")
+    h2 = net.get("h2")
 
     downloads_times = []
     for _ in range(0, 3):
@@ -165,7 +164,6 @@ def bufferbloat():
     # spawned on host h1 (not from google!)
     # Hint: Verify the url by running your curl command without the
     # flags. The html webpage should be returned as the response.
-    
 
     # Hint: have a separate function to do this and you may find the
     # loop below useful.
@@ -184,11 +182,11 @@ def bufferbloat():
     # TODO: compute average (and standard deviation) of the fetch
     # times.  You don't need to plot them.  Just note it in your
     # README and explain.
+    print("\n")
     avg = sum(downloads_times) / len(downloads_times)
     print(f"Average...........: {avg}")
     stdev = math.sqrt(sum((time - avg) ** 2 for time in downloads_times))
     print(f"Standard deviation: {stdev}")
-
 
     # Hint: The command below invokes a CLI which you can use to
     # debug.  It allows you to run arbitrary commands inside your
